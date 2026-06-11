@@ -1,0 +1,14 @@
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/bin/Debug/net10.0/Mage_v_Drag
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/bin/Debug/net10.0/Mage_v_Drag.deps.json
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/bin/Debug/net10.0/Mage_v_Drag.runtimeconfig.json
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/bin/Debug/net10.0/Mage_v_Drag.dll
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/bin/Debug/net10.0/Mage_v_Drag.pdb
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.GeneratedMSBuildEditorConfig.editorconfig
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.AssemblyInfoInputs.cache
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.AssemblyInfo.cs
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.csproj.CoreCompileInputs.cache
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.dll
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/refint/Mage_v_Drag.dll
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.pdb
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.genruntimeconfig.cache
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/ref/Mage_v_Drag.dll

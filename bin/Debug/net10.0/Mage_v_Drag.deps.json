@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Mage_v_Drag/1.0.0": {
+        "runtime": {
+          "Mage_v_Drag.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Mage_v_Drag/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
