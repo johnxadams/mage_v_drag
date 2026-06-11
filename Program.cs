@@ -50,9 +50,9 @@ namespace Mage_v_Drag
             // Health = health;
             Experience = experience;
             Spells = new List<Spell>(){
-                new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(50)),
-                new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(40)),
-                new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(60))
+                new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(170)),
+                new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(120)),
+                new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(230))
             };
             UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 20, (w) => w.HealCharacter(200)),
@@ -95,8 +95,17 @@ public void CastUtilSpell(Spell spell, Wizard target)
 
         public void RegenerateMana(int amount)
         {
-            Mana += amount;
-            Console.WriteLine($"{NameOfWizard} regeneriert {amount} Mana! Aktuelles Mana: {Mana}");
+            int maxMana = 400;
+
+
+
+            int spaceLeft = maxMana - Mana;
+            int addedAmount = Math.Min(amount, spaceLeft);
+
+            Mana += addedAmount;
+            
+            // Ändere 'amount' zu 'addedAmount'
+            Console.WriteLine($"{NameOfWizard} regeneriert {addedAmount} Mana! Aktuelles Mana: {Mana}");
         }
     }
 
