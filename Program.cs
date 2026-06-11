@@ -155,7 +155,6 @@ namespace Mage_v_Drag
             Wizard wizard01 = new ("Aerith", 120, 400, 2000);
 
             Console.WriteLine($"Total Wizards Created: {Wizard.CountOfWizards}");
-            // Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", wizard01.Spells)}");
             
             IEnumerable<string> spellNames = wizard01.Spells.Select(s => s.Name);
             Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", spellNames)}");
