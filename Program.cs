@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Mage_v_Drag
 {
@@ -10,10 +11,11 @@ namespace Mage_v_Drag
         public int Health { get; protected set; }
         public int Mana { get; set; }
 
-        public Character(string name, int health)
+        public Character(string name, int health, int mana)
         {
             Name = name; 
             Health = health;
+            Mana = mana;
         }
 
 
@@ -30,12 +32,12 @@ namespace Mage_v_Drag
         public string NameOfWizard { get; set; }
         public List<Spell> Spells { get; set; }
         public List<Spell> UtilitySpell { get; set; }
-        private int Mana { get; set; }
+        // private int Mana { get; set; }
         private float Experience { get; set; }
 
 
         public Wizard(string name, int mana, int health, float experience)
-    : base(name, health)
+    : base(name, health, mana)
         {
             NameOfWizard = name;
             Mana = mana;
@@ -93,7 +95,7 @@ namespace Mage_v_Drag
         public int Damage { get; set; }
         public int ManaCost { get; set; }
 
-        public Attack(string name, int damage, int manaCost, int heal = 0)
+        public Attack(string name, int damage, int manaCost)
         {
             Name = name;
             Damage = damage;
@@ -105,16 +107,16 @@ namespace Mage_v_Drag
     {
         public string NameOfDragon { get; set; }
         public List<Attack> Attacks { get; set; }
-        // private int Health { get; set; }
         private float Experience { get; set; }
 
         /** Base: Rufe den Konstruktor der Basisklasse (Character) 
         auf und übergib ihm diese Werte. */ 
 
-        public Dragon(string name, int health, float experience) : base(name, health)
+        public Dragon(string name, int health, int mana, float experience) : base(name, health, mana)
         {
             NameOfDragon = name;
             Health = health;
+            Mana = mana;
             Experience = experience;
             Attacks = new List<Attack>(){
                 new Attack("Fire Breath", 50, 30),
@@ -127,14 +129,15 @@ namespace Mage_v_Drag
         {
             Console.WriteLine($"{NameOfDragon} attacks with {attack.Name}!");
             wizard.TakeDamage(attack.Damage);
-            Console.WriteLine($"{wizard.NameOfWizard} takes {attack.Damage} damage! Remaining health: {wizard.Health}");
         }
 
         public void Attack(Wizard wizard)
         {
             if (Attacks.Count > 0)
             {
-                UseAttack(Attacks[0], wizard);
+                Random numberGen = new ();
+                int randomDragonAbility = numberGen.Next(0, Attacks.Count);
+                UseAttack(Attacks[randomDragonAbility], wizard);
             }
         }
     }
@@ -146,6 +149,7 @@ namespace Mage_v_Drag
     {
         static void Main(string[] args) 
         {
+            /* Parameter: Name, Health, Mana, Exp. */
             Console.ForegroundColor = ConsoleColor.Magenta;
             Wizard wizard01 = new ("Aerith", 120, 400, 2000);
 
@@ -153,14 +157,14 @@ namespace Mage_v_Drag
             Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", wizard01.Spells)}");
         
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Dragon dragon01 = new ("Tiamat", 1000, 700);
+            Dragon dragon01 = new ("Tiamat", 1000, 300, 700);
 
             Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", dragon01.Attacks)}");
         
             do 
             {
                 Console.WriteLine("Choose an action: 1. Cast Spell 2. Use Utility Spell 3. Attack Dragon");
-                string choice = Console.ReadLine();
+                string choice = ReadNonEmptyInput();
 
                 switch (choice)
                 {
@@ -175,7 +179,7 @@ namespace Mage_v_Drag
                                 $"(Damage: {wizard01.Spells[i].Damage}, Mana Cost: {wizard01.Spells[i].ManaCost})");
                         }
 
-                        string spellChoice = Console.ReadLine();
+                        string spellChoice = ReadNonEmptyInput();
 
                         int spellIndex = int.Parse(spellChoice) - 1;
 
@@ -190,7 +194,6 @@ namespace Mage_v_Drag
 
                             break;
 
-                        break;
                     case "2":
                         Console.WriteLine("Choose a utility spell to use:");
                         for (int i = 0; i < wizard01.UtilitySpell.Count; i++)
@@ -204,6 +207,19 @@ namespace Mage_v_Drag
                 }
             } while (dragon01.Health > 0 && wizard01.Health > 0);
         
+        }
+        /* GATE KEEPER MECHANISM*/
+        static string ReadNonEmptyInput()
+        {
+            while (true)
+            {
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input))
+                    return input;
+
+                Console.WriteLine("Please enter a valid value.");
+            }
         }
     }
 }
