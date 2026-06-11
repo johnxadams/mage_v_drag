@@ -87,6 +87,7 @@ namespace Mage_v_Drag
             ManaCost = manaCost;
             Heal = heal;
         }
+
     }
 
     class Attack
@@ -154,12 +155,17 @@ namespace Mage_v_Drag
             Wizard wizard01 = new ("Aerith", 120, 400, 2000);
 
             Console.WriteLine($"Total Wizards Created: {Wizard.CountOfWizards}");
-            Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", wizard01.Spells)}");
+            // Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", wizard01.Spells)}");
+            
+            IEnumerable<string> spellNames = wizard01.Spells.Select(s => s.Name);
+            Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", spellNames)}");
         
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Dragon dragon01 = new ("Tiamat", 1000, 300, 700);
 
-            Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", dragon01.Attacks)}");
+            IEnumerable<string> abilityNames = dragon01.Attacks.Select(s => s.Name);
+            Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", abilityNames)}");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
         
             do 
             {
