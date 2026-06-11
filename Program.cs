@@ -53,60 +53,45 @@ namespace Mage_v_Drag
                 new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(50)),
                 new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(40)),
                 new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(60))
-                // new Spell("Sorcerous Storm", 50, 30, 0),
-                // new Spell("Lightning Bolt", 40, 25, 0),
-                // new Spell("Ray of Judgment", 60, 35, 0)
             };
             UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 20, (w) => w.HealCharacter(200)),
                 new Spell("Meditate", 15, (w) => w.RegenerateMana(130)),
                 new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.NameOfWizard} is now invisible!"))
-                // new Spell("Heal", 0, 20, 200),
-                // new Spell("Meditate", 0, 15, 0),
-                // new Spell("Invisibility", 0, 25, 0)
             };
             CountOfWizards++;
         }
 
+ 
+
         public void CastSpell(Spell spell, Dragon dragon)
-        {
-            if (Mana < spell.ManaCost)
-            {
-                Console.WriteLine("Not enough mana!");
-                return;
-            }
+{
+    if (Mana < spell.ManaCost)
+    {
+        Console.WriteLine("Not enough mana!");
+        return;
+    }
 
-            Mana -= spell.ManaCost;
+    Mana -= spell.ManaCost;
+    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
 
-            Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+    spell.EffectDragon?.Invoke(this, dragon);
+}
 
-            // this' stand for the wizard
-            spell.EffectDragon(this, dragon);
+public void CastUtilSpell(Spell spell, Wizard target) 
+{
+    if (Mana < spell.ManaCost)
+    {
+        Console.WriteLine("Not enough mana!");
+        return;
+    }
 
-        }
+    Mana -= spell.ManaCost;
+    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
 
-        public void CastUtilSpell(Spell spell, Wizard target) {
-            
-            if (spell.EffectSelf == null) 
-            {
-                Console.WriteLine($"Fehler: Spell {spell.Name} has no Utility-Effekt!");
-                return;
-            }
-
-            if (Mana < spell.ManaCost)
-            {
-                Console.WriteLine("Not enough mana!");
-                return;
-            }
-
-            Mana -= spell.ManaCost;
-
-            Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
-            
-            spell.EffectSelf(target);
-      
-
-        }
+    // Sicherer Aufruf mittels ?.Invoke
+    spell.EffectSelf?.Invoke(target);
+}
 
         public void RegenerateMana(int amount)
         {
@@ -122,18 +107,13 @@ namespace Mage_v_Drag
         public int ManaCost { get; set; }
         public int Heal { get; set; }
         public int ManaRegen { get; set; }
-        public Action<Wizard, Dragon> EffectDragon { get; set; }
-        public Action<Wizard> EffectSelf {get; set;}
+        public Action<Wizard, Dragon>? EffectDragon { get; set; }
+        public Action<Wizard>? EffectSelf {get; set;}
 
 
         // public Spell(string name, int damage, int manaCost, int heal = 0, int manaRegen = 0)
         public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
         {
-            // Name = name;
-            // Damage = damage;
-            // ManaCost = manaCost;
-            // Heal = heal;
-            // ManaRegen = manaRegen;
             Name = name;
             ManaCost = manaCost;
             EffectDragon = effect;
