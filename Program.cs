@@ -24,6 +24,12 @@ namespace Mage_v_Drag
             Health -= damage;
             Console.WriteLine($"{Name} takes {damage} damage! Remaining health: {Health}");
         }
+
+          public void HealCharacter(int heal)
+        {
+            Health += heal;
+            Console.WriteLine($"{Name} takes {heal} healing! Remaining health: {Health}");
+        }
     }
 
     class Wizard : Character
@@ -31,7 +37,7 @@ namespace Mage_v_Drag
         public static int CountOfWizards { get; private set; }
         public string NameOfWizard { get; set; }
         public List<Spell> Spells { get; set; }
-        public List<Spell> UtilitySpell { get; set; }
+        public List<Spell> UtilitySpells { get; set; }
         // private int Mana { get; set; }
         private float Experience { get; set; }
 
@@ -44,14 +50,14 @@ namespace Mage_v_Drag
             // Health = health;
             Experience = experience;
             Spells = new List<Spell>(){
-                new Spell("Sorcerous Storm", 50, 30),
-                new Spell("Lightning Bolt", 40, 25),
-                new Spell("Ray of Judgment", 60, 35)
+                new Spell("Sorcerous Storm", 50, 30, 0),
+                new Spell("Lightning Bolt", 40, 25, 0),
+                new Spell("Ray of Judgment", 60, 35, 0)
             };
-            UtilitySpell = new List<Spell>(){
+            UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 0, 20, 200),
-                new Spell("Meditate", 0, 15),
-                new Spell("Invisibility", 0, 25)
+                new Spell("Meditate", 0, 15, 0),
+                new Spell("Invisibility", 0, 25, 0)
             };
             CountOfWizards++;
         }
@@ -69,6 +75,22 @@ namespace Mage_v_Drag
             Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
 
             dragon.TakeDamage(spell.Damage);
+
+        }
+
+        public void CastUtilSpell(Spell spell, Wizard wizard) {
+            
+            if (Mana < spell.ManaCost)
+            {
+                Console.WriteLine("Not enough mana!");
+                return;
+            }
+
+            Mana -= spell.ManaCost;
+
+            Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+
+            wizard.HealCharacter(spell.Heal);
 
         }
     }
@@ -176,13 +198,8 @@ namespace Mage_v_Drag
                     case "1":
                         Console.WriteLine("Choose a spell to cast:");
                                             
-
-                        for (int i = 0; i < wizard01.Spells.Count; i++)
-                        {
-                            Console.WriteLine(
-                                $"{i + 1}. {wizard01.Spells[i].Name} " +
-                                $"(Damage: {wizard01.Spells[i].Damage}, Mana Cost: {wizard01.Spells[i].ManaCost})");
-                        }
+                        DisplaySpells(wizard01.Spells);
+                
 
                         string spellChoice = ReadNonEmptyInput();
 
@@ -201,10 +218,22 @@ namespace Mage_v_Drag
 
                     case "2":
                         Console.WriteLine("Choose a utility spell to use:");
-                        for (int i = 0; i < wizard01.UtilitySpell.Count; i++)
-                        {
-                            Console.WriteLine($"{i + 1}. {wizard01.UtilitySpell[i].Name} (Heal: {wizard01.UtilitySpell[i].Heal}, Mana Cost: {wizard01.UtilitySpell[i].ManaCost})");
-                        }
+                       
+                       DisplaySpells(wizard01.UtilitySpells);
+                        // for (int i = 0; i < wizard01.UtilitySpells.Count; i++)
+                        // {
+                        //     Console.WriteLine($"{i + 1}. {wizard01.UtilitySpells[i].Name} (Heal: {wizard01.UtilitySpells[i].Heal}, Mana Cost: {wizard01.UtilitySpells[i].ManaCost})");
+                        // }
+
+                        string utilSpellChoice = ReadNonEmptyInput();
+                        // change numbers into indexes 123 -> 012
+                        int utilSpellIndex = int.Parse(utilSpellChoice) - 1;
+
+                        Spell selectedUtilSpell = wizard01.UtilitySpells[utilSpellIndex];
+                       
+                        wizard01.CastUtilSpell(selectedUtilSpell, wizard01);
+                       
+
                         break;
                     default:
                         Console.WriteLine("Invalid choice, please try again.");
@@ -224,6 +253,14 @@ namespace Mage_v_Drag
                     return input;
 
                 Console.WriteLine("Please enter a valid value.");
+            }
+        }
+
+        static void DisplaySpells(List<Spell> spells)
+        {
+            for (int i = 0; i < spells.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {spells[i].Name} (Mana: {spells[i].ManaCost})");
             }
         }
     }
