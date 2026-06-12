@@ -113,10 +113,7 @@ namespace Mage_v_Drag
     class Spell
     {
         public string Name { get; set; }
-        // public int Damage { get; set; }
         public int ManaCost { get; set; }
-        // public int Heal { get; set; }
-        // public int ManaRegen { get; set; }
         public Action<Wizard, Dragon>? EffectDragon { get; set; }
         public Action<Wizard>? EffectSelf {get; set;}
 
@@ -147,11 +144,11 @@ namespace Mage_v_Drag
         public string Name { get; set; }
         public int Damage { get; set; }
         public int ManaCost { get; set; }
+        public Action<Dragon, Wizard>? EffectWizard { get; set; }
 
-        public Attack(string name, int damage, int manaCost)
+        public Attack(string name,  int manaCost)
         {
             Name = name;
-            Damage = damage;
             ManaCost = manaCost;
         }
     }
@@ -168,26 +165,28 @@ namespace Mage_v_Drag
         {
             Experience = experience;
             Attacks = new List<Attack>(){
-                new Attack("Fire Breath", 50, 30),
-                new Attack("Claw Swipe", 40, 0),
-                new Attack("Tail Whip", 60, 0),
+                new Attack("Fire Breath", 30) {EffectWizard = (d, w) => w.TakeDamage(110)},
+                new Attack("Claw Swipe", 0) {EffectWizard = (d, w) => w.TakeDamage(70)},
+                new Attack("Tail Whip", 0) {EffectWizard = (d, w) => w.TakeDamage(55)},
             };
         }
 
-        public void UseAttack(Attack attack, Wizard wizard)
-        {
-            Console.WriteLine($"{Name} attacks with {attack.Name}!");
-            wizard.TakeDamage(attack.Damage);
-        }
+        private static readonly Random numberGen = new Random();
 
         public void Attack(Wizard wizard)
         {
             if (Attacks.Count > 0)
             {
-                Random numberGen = new ();
                 int randomDragonAbility = numberGen.Next(0, Attacks.Count);
                 UseAttack(Attacks[randomDragonAbility], wizard);
             }
+        }
+
+        public void UseAttack(Attack attack, Wizard wizard)
+        {
+            Console.WriteLine($"{Name} attacks with {attack.Name}!");
+            attack.EffectWizard?.Invoke(this, wizard);
+            // wizard.TakeDamage(attack.Damage);
         }
     }
 
