@@ -46,14 +46,20 @@ namespace Mage_v_Drag
         {
             Experience = experience;
             Spells = new List<Spell>(){
-                new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(170)),
-                new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(120)),
-                new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(230))
+                new Spell("Sorcerous Storm", 30) {EffectDragon = (w, d) => d.TakeDamage(170)},
+                new Spell("Lightning Bolt", 25) {EffectDragon = (w, d) => d.TakeDamage(120)},
+                new Spell("Ray of Judgment", 35) {EffectDragon = (w, d) => d.TakeDamage(230)},
+                // new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(170)),
+                // new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(120)),
+                // new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(230))
             };
             UtilitySpells = new List<Spell>(){
-                new Spell("Heal", 20, (w) => w.HealCharacter(200)),
-                new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
-                new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.Name} is now invisible!"))
+                new Spell("Heal", 20) {EffectSelf = (w) => w.HealCharacter(200)},
+                new Spell("Meditate", 25) {EffectSelf = (w) => w.RegenerateMana(130)},
+                new Spell("Invisibility", 35) {EffectSelf = (w) => Console.WriteLine($"{w.Name} is now invisible!")},
+                // new Spell("Heal", 20, (w) => w.HealCharacter(200)),
+                // new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
+                // new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.Name} is now invisible!"))
             };
             CountOfWizards++;
         }
@@ -107,26 +113,32 @@ namespace Mage_v_Drag
     class Spell
     {
         public string Name { get; set; }
-        public int Damage { get; set; }
+        // public int Damage { get; set; }
         public int ManaCost { get; set; }
-        public int Heal { get; set; }
-        public int ManaRegen { get; set; }
+        // public int Heal { get; set; }
+        // public int ManaRegen { get; set; }
         public Action<Wizard, Dragon>? EffectDragon { get; set; }
         public Action<Wizard>? EffectSelf {get; set;}
 
-        public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
-        {
-            Name = name;
-            ManaCost = manaCost;
-            EffectDragon = effect;
-        }
+        public Spell(string name, int manaCost)
+                {
+                    Name = name;
+                    ManaCost = manaCost;
+                }
 
-        public Spell(string name, int manaCost, Action<Wizard> effect)
-        {
-            Name = name;
-            ManaCost = manaCost;
-            EffectSelf = effect; 
-        }
+        // public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
+        // {
+        //     Name = name;
+        //     ManaCost = manaCost;
+        //     EffectDragon = effect;
+        // }
+
+        // public Spell(string name, int manaCost, Action<Wizard> effect)
+        // {
+        //     Name = name;
+        //     ManaCost = manaCost;
+        //     EffectSelf = effect; 
+        // }
 
     }
 
