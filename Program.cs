@@ -28,14 +28,14 @@ namespace Mage_v_Drag
           public void HealCharacter(int heal)
         {
             Health += heal;
-            Console.WriteLine($"{Name} takes {heal} healing! Remaining health: {Health}");
+            Console.WriteLine($"{Name} heals {heal} health! Remaining health: {Health}");
         }
     }
 
     class Wizard : Character
     {
         public static int CountOfWizards { get; private set; }
-        public string NameOfWizard { get; set; }
+        // public string NameOfWizard { get; set; }
         public List<Spell> Spells { get; set; }
         public List<Spell> UtilitySpells { get; set; }
         // private int Mana { get; set; }
@@ -45,8 +45,8 @@ namespace Mage_v_Drag
         public Wizard(string name, int mana, int health, float experience)
     : base(name, health, mana)
         {
-            NameOfWizard = name;
-            Mana = mana;
+            // NameOfWizard = name;
+            // Mana = mana;
             // Health = health;
             Experience = experience;
             Spells = new List<Spell>(){
@@ -57,7 +57,7 @@ namespace Mage_v_Drag
             UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 20, (w) => w.HealCharacter(200)),
                 new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
-                new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.NameOfWizard} is now invisible!"))
+                new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.Name} is now invisible!"))
             };
             CountOfWizards++;
         }
@@ -65,33 +65,33 @@ namespace Mage_v_Drag
  
 
         public void CastSpell(Spell spell, Dragon dragon)
-{
-    if (Mana < spell.ManaCost)
-    {
-        Console.WriteLine("Not enough mana!");
-        return;
-    }
+        {
+            if (Mana < spell.ManaCost)
+            {
+                Console.WriteLine("Not enough mana!");
+                return;
+            }
 
-    Mana -= spell.ManaCost;
-    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+            Mana -= spell.ManaCost;
+            Console.WriteLine($"{Name} casts {spell.Name}!");
 
-    spell.EffectDragon?.Invoke(this, dragon);
-}
+            spell.EffectDragon?.Invoke(this, dragon);
+        }
 
-public void CastUtilSpell(Spell spell, Wizard target) 
-{
-    if (Mana < spell.ManaCost)
-    {
-        Console.WriteLine("Not enough mana!");
-        return;
-    }
+        public void CastUtilSpell(Spell spell, Wizard target) 
+        {
+            if (Mana < spell.ManaCost)
+            {
+                Console.WriteLine("Not enough mana!");
+                return;
+            }
 
-    Mana -= spell.ManaCost;
-    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+            Mana -= spell.ManaCost;
+            Console.WriteLine($"{Name} casts {spell.Name}!");
 
-    // Sicherer Aufruf mittels ?.Invoke
-    spell.EffectSelf?.Invoke(target);
-}
+            // Sicherer Aufruf mittels ?.Invoke
+            spell.EffectSelf?.Invoke(target);
+        }
 
         public void RegenerateMana(int amount)
         {
@@ -104,8 +104,7 @@ public void CastUtilSpell(Spell spell, Wizard target)
 
             Mana += addedAmount;
             
-            // Ändere 'amount' zu 'addedAmount'
-            Console.WriteLine($"{NameOfWizard} regeneriert {addedAmount} Mana! Aktuelles Mana: {Mana}");
+            Console.WriteLine($"{Name} regeneriert {addedAmount} Mana! Aktuelles Mana: {Mana}");
         }
     }
 
@@ -119,8 +118,6 @@ public void CastUtilSpell(Spell spell, Wizard target)
         public Action<Wizard, Dragon>? EffectDragon { get; set; }
         public Action<Wizard>? EffectSelf {get; set;}
 
-
-        // public Spell(string name, int damage, int manaCost, int heal = 0, int manaRegen = 0)
         public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
         {
             Name = name;
@@ -128,7 +125,6 @@ public void CastUtilSpell(Spell spell, Wizard target)
             EffectDragon = effect;
         }
 
-        // Konstruktor für Utility-Zauber (nutzt EffectSelf)
         public Spell(string name, int manaCost, Action<Wizard> effect)
         {
             Name = name;
@@ -205,7 +201,7 @@ public void CastUtilSpell(Spell spell, Wizard target)
             Console.WriteLine($"Total Wizards Created: {Wizard.CountOfWizards}");
             
             IEnumerable<string> spellNames = wizard01.Spells.Select(s => s.Name);
-            Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", spellNames)}");
+            Console.WriteLine($"{wizard01.Name} has the following spells: {string.Join(", ", spellNames)}");
         
             Console.ForegroundColor = ConsoleColor.Magenta;
             Dragon dragon01 = new ("Tiamat", 1000, 300, 700);
