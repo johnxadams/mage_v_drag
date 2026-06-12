@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Mage_v_Drag
 {
@@ -10,10 +11,11 @@ namespace Mage_v_Drag
         public int Health { get; protected set; }
         public int Mana { get; set; }
 
-        public Character(string name, int health)
+        public Character(string name, int health, int mana)
         {
             Name = name; 
             Health = health;
+            Mana = mana;
         }
 
 
@@ -22,6 +24,12 @@ namespace Mage_v_Drag
             Health -= damage;
             Console.WriteLine($"{Name} takes {damage} damage! Remaining health: {Health}");
         }
+
+          public void HealCharacter(int heal)
+        {
+            Health += heal;
+            Console.WriteLine($"{Name} takes {heal} healing! Remaining health: {Health}");
+        }
     }
 
     class Wizard : Character
@@ -29,45 +37,75 @@ namespace Mage_v_Drag
         public static int CountOfWizards { get; private set; }
         public string NameOfWizard { get; set; }
         public List<Spell> Spells { get; set; }
-        public List<Spell> UtilitySpell { get; set; }
-        private int Mana { get; set; }
+        public List<Spell> UtilitySpells { get; set; }
+        // private int Mana { get; set; }
         private float Experience { get; set; }
 
 
         public Wizard(string name, int mana, int health, float experience)
-    : base(name, health)
+    : base(name, health, mana)
         {
             NameOfWizard = name;
             Mana = mana;
             // Health = health;
             Experience = experience;
             Spells = new List<Spell>(){
-                new Spell("Sorcerous Storm", 50, 30),
-                new Spell("Lightning Bolt", 40, 25),
-                new Spell("Ray of Judgment", 60, 35)
+                new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(170)),
+                new Spell("Lightning Bolt", 25, (w, d) => d.TakeDamage(120)),
+                new Spell("Ray of Judgment", 35, (w, d) => d.TakeDamage(230))
             };
-            UtilitySpell = new List<Spell>(){
-                new Spell("Heal", 0, 20, 200),
-                new Spell("Meditate", 0, 15),
-                new Spell("Invisibility", 0, 25)
+            UtilitySpells = new List<Spell>(){
+                new Spell("Heal", 20, (w) => w.HealCharacter(200)),
+                new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
+                new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.NameOfWizard} is now invisible!"))
             };
             CountOfWizards++;
         }
 
+ 
+
         public void CastSpell(Spell spell, Dragon dragon)
+{
+    if (Mana < spell.ManaCost)
+    {
+        Console.WriteLine("Not enough mana!");
+        return;
+    }
+
+    Mana -= spell.ManaCost;
+    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+
+    spell.EffectDragon?.Invoke(this, dragon);
+}
+
+public void CastUtilSpell(Spell spell, Wizard target) 
+{
+    if (Mana < spell.ManaCost)
+    {
+        Console.WriteLine("Not enough mana!");
+        return;
+    }
+
+    Mana -= spell.ManaCost;
+    Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
+
+    // Sicherer Aufruf mittels ?.Invoke
+    spell.EffectSelf?.Invoke(target);
+}
+
+        public void RegenerateMana(int amount)
         {
-            if (Mana < spell.ManaCost)
-            {
-                Console.WriteLine("Not enough mana!");
-                return;
-            }
+            int maxMana = 400;
 
-            Mana -= spell.ManaCost;
 
-            Console.WriteLine($"{NameOfWizard} casts {spell.Name}!");
 
-            dragon.TakeDamage(spell.Damage);
+            int spaceLeft = maxMana - Mana;
+            int addedAmount = Math.Min(amount, spaceLeft);
 
+            Mana += addedAmount;
+            
+            // Ändere 'amount' zu 'addedAmount'
+            Console.WriteLine($"{NameOfWizard} regeneriert {addedAmount} Mana! Aktuelles Mana: {Mana}");
         }
     }
 
@@ -77,14 +115,27 @@ namespace Mage_v_Drag
         public int Damage { get; set; }
         public int ManaCost { get; set; }
         public int Heal { get; set; }
+        public int ManaRegen { get; set; }
+        public Action<Wizard, Dragon>? EffectDragon { get; set; }
+        public Action<Wizard>? EffectSelf {get; set;}
 
-        public Spell(string name, int damage, int manaCost, int heal = 0)
+
+        // public Spell(string name, int damage, int manaCost, int heal = 0, int manaRegen = 0)
+        public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
         {
             Name = name;
-            Damage = damage;
             ManaCost = manaCost;
-            Heal = heal;
+            EffectDragon = effect;
         }
+
+        // Konstruktor für Utility-Zauber (nutzt EffectSelf)
+        public Spell(string name, int manaCost, Action<Wizard> effect)
+        {
+            Name = name;
+            ManaCost = manaCost;
+            EffectSelf = effect; 
+        }
+
     }
 
     class Attack
@@ -93,7 +144,7 @@ namespace Mage_v_Drag
         public int Damage { get; set; }
         public int ManaCost { get; set; }
 
-        public Attack(string name, int damage, int manaCost, int heal = 0)
+        public Attack(string name, int damage, int manaCost)
         {
             Name = name;
             Damage = damage;
@@ -105,16 +156,16 @@ namespace Mage_v_Drag
     {
         public string NameOfDragon { get; set; }
         public List<Attack> Attacks { get; set; }
-        // private int Health { get; set; }
         private float Experience { get; set; }
 
         /** Base: Rufe den Konstruktor der Basisklasse (Character) 
         auf und übergib ihm diese Werte. */ 
 
-        public Dragon(string name, int health, float experience) : base(name, health)
+        public Dragon(string name, int health, int mana, float experience) : base(name, health, mana)
         {
             NameOfDragon = name;
             Health = health;
+            Mana = mana;
             Experience = experience;
             Attacks = new List<Attack>(){
                 new Attack("Fire Breath", 50, 30),
@@ -127,14 +178,15 @@ namespace Mage_v_Drag
         {
             Console.WriteLine($"{NameOfDragon} attacks with {attack.Name}!");
             wizard.TakeDamage(attack.Damage);
-            Console.WriteLine($"{wizard.NameOfWizard} takes {attack.Damage} damage! Remaining health: {wizard.Health}");
         }
 
         public void Attack(Wizard wizard)
         {
             if (Attacks.Count > 0)
             {
-                UseAttack(Attacks[0], wizard);
+                Random numberGen = new ();
+                int randomDragonAbility = numberGen.Next(0, Attacks.Count);
+                UseAttack(Attacks[randomDragonAbility], wizard);
             }
         }
     }
@@ -146,64 +198,123 @@ namespace Mage_v_Drag
     {
         static void Main(string[] args) 
         {
+            /* Parameter: Name, Health, Mana, Exp. */
             Console.ForegroundColor = ConsoleColor.Magenta;
             Wizard wizard01 = new ("Aerith", 120, 400, 2000);
 
             Console.WriteLine($"Total Wizards Created: {Wizard.CountOfWizards}");
-            Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", wizard01.Spells)}");
+            
+            IEnumerable<string> spellNames = wizard01.Spells.Select(s => s.Name);
+            Console.WriteLine($"{wizard01.NameOfWizard} has the following spells: {string.Join(", ", spellNames)}");
         
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Dragon dragon01 = new ("Tiamat", 1000, 700);
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Dragon dragon01 = new ("Tiamat", 1000, 300, 700);
 
-            Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", dragon01.Attacks)}");
+            IEnumerable<string> abilityNames = dragon01.Attacks.Select(s => s.Name);
+            Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", abilityNames)}");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
         
             do 
             {
                 Console.WriteLine("Choose an action: 1. Cast Spell 2. Use Utility Spell 3. Attack Dragon");
-                string choice = Console.ReadLine();
+            Console.ForegroundColor = ConsoleColor.Red;
+
+                string choice = ReadNonEmptyInput();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                 switch (choice)
                 {
                     case "1":
                         Console.WriteLine("Choose a spell to cast:");
-                                            
+                        DisplaySpells(wizard01.Spells);
 
-                        for (int i = 0; i < wizard01.Spells.Count; i++)
-                        {
-                            Console.WriteLine(
-                                $"{i + 1}. {wizard01.Spells[i].Name} " +
-                                $"(Damage: {wizard01.Spells[i].Damage}, Mana Cost: {wizard01.Spells[i].ManaCost})");
-                        }
-
-                        string spellChoice = Console.ReadLine();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        string spellChoice = ReadNonEmptyInput();
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                         int spellIndex = int.Parse(spellChoice) - 1;
+                        
+                        if (spellIndex < 0 || spellIndex >= wizard01.Spells.Count)
+                        {
+                            Console.WriteLine("Invalid spell choice!\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
 
                         Spell selectedSpell = wizard01.Spells[spellIndex];
 
-                        wizard01.CastSpell(selectedSpell, dragon01);
-
-                        if (dragon01.Health > 0)
-                            {
-                                dragon01.Attack(wizard01);
-                            }
-
-                            break;
-
-                        break;
-                    case "2":
-                        Console.WriteLine("Choose a utility spell to use:");
-                        for (int i = 0; i < wizard01.UtilitySpell.Count; i++)
+                     
+                        if (wizard01.Mana < selectedSpell.ManaCost)
                         {
-                            Console.WriteLine($"{i + 1}. {wizard01.UtilitySpell[i].Name} (Heal: {wizard01.UtilitySpell[i].Heal}, Mana Cost: {wizard01.UtilitySpell[i].ManaCost})");
+                            Console.WriteLine($"Not enough mana! (Need {selectedSpell.ManaCost}, have {wizard01.Mana})\n");
+                            continue; 
+                        }
+
+                        
+                        wizard01.CastSpell(selectedSpell, dragon01);
+                        
+                        if (dragon01.Health > 0)
+                        {
+                            dragon01.Attack(wizard01);
                         }
                         break;
-                    default:
-                        Console.WriteLine("Invalid choice, please try again.");
+
+                    case "2":
+                        Console.WriteLine("Choose a utility spell to use:");
+                        DisplaySpells(wizard01.UtilitySpells);
+
+                        string utilSpellChoice = ReadNonEmptyInput();
+                        int utilSpellIndex = int.Parse(utilSpellChoice) - 1;
+
+                        // Sicherheitscheck für den Index
+                        if (utilSpellIndex < 0 || utilSpellIndex >= wizard01.UtilitySpells.Count)
+                        {
+                            Console.WriteLine("Invalid spell choice!\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
+
+                        Spell selectedUtilSpell = wizard01.UtilitySpells[utilSpellIndex];
+
+                        // Prüfung auf Mana
+                        if (wizard01.Mana < selectedUtilSpell.ManaCost) 
+                        {
+                            Console.WriteLine($"Not enough mana! (Need {selectedUtilSpell.ManaCost}, have {wizard01.Mana})\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
+
+                        // Wenn genug Mana da ist: Zaubern und Drache greift an
+                        wizard01.CastUtilSpell(selectedUtilSpell, wizard01);
+                        
+                        if (dragon01.Health > 0)
+                        {
+                            dragon01.Attack(wizard01);
+                        }
                         break;
                 }
+                
+                
             } while (dragon01.Health > 0 && wizard01.Health > 0);
         
+        }
+        /* GATE KEEPER MECHANISM*/
+        static string ReadNonEmptyInput()
+        {
+            while (true)
+            {
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input))
+                    return input;
+
+                Console.WriteLine("Please enter a valid value.");
+            }
+        }
+
+        static void DisplaySpells(List<Spell> spells)
+        {
+            for (int i = 0; i < spells.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {spells[i].Name} (Mana: {spells[i].ManaCost})");
+            }
         }
     }
 }

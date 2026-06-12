@@ -12,3 +12,4 @@
 /Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.pdb
 /Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.genruntimeconfig.cache
 /Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/ref/Mage_v_Drag.dll
+/Users/JohnAdams/Documents/projects/tutorials/csTutorial/Mage_v_Drag/obj/Debug/net10.0/Mage_v_Drag.sourcelink.json
