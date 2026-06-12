@@ -56,7 +56,7 @@ namespace Mage_v_Drag
             };
             UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 20, (w) => w.HealCharacter(200)),
-                new Spell("Meditate", 15, (w) => w.RegenerateMana(130)),
+                new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
                 new Spell("Invisibility", 25, (w) => Console.WriteLine($"{w.NameOfWizard} is now invisible!"))
             };
             CountOfWizards++;
@@ -217,54 +217,81 @@ public void CastUtilSpell(Spell spell, Wizard target)
             do 
             {
                 Console.WriteLine("Choose an action: 1. Cast Spell 2. Use Utility Spell 3. Attack Dragon");
+            Console.ForegroundColor = ConsoleColor.Red;
+
                 string choice = ReadNonEmptyInput();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                 switch (choice)
                 {
                     case "1":
                         Console.WriteLine("Choose a spell to cast:");
-                                            
                         DisplaySpells(wizard01.Spells);
-                
 
+                        Console.ForegroundColor = ConsoleColor.Red;
                         string spellChoice = ReadNonEmptyInput();
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                         int spellIndex = int.Parse(spellChoice) - 1;
+                        
+                        if (spellIndex < 0 || spellIndex >= wizard01.Spells.Count)
+                        {
+                            Console.WriteLine("Invalid spell choice!\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
 
                         Spell selectedSpell = wizard01.Spells[spellIndex];
 
+                     
+                        if (wizard01.Mana < selectedSpell.ManaCost)
+                        {
+                            Console.WriteLine($"Not enough mana! (Need {selectedSpell.ManaCost}, have {wizard01.Mana})\n");
+                            continue; 
+                        }
+
+                        
                         wizard01.CastSpell(selectedSpell, dragon01);
-
+                        
                         if (dragon01.Health > 0)
-                            {
-                                dragon01.Attack(wizard01);
-                            }
-
-                            break;
+                        {
+                            dragon01.Attack(wizard01);
+                        }
+                        break;
 
                     case "2":
                         Console.WriteLine("Choose a utility spell to use:");
-                       
-                       DisplaySpells(wizard01.UtilitySpells);
-                        // for (int i = 0; i < wizard01.UtilitySpells.Count; i++)
-                        // {
-                        //     Console.WriteLine($"{i + 1}. {wizard01.UtilitySpells[i].Name} (Heal: {wizard01.UtilitySpells[i].Heal}, Mana Cost: {wizard01.UtilitySpells[i].ManaCost})");
-                        // }
+                        DisplaySpells(wizard01.UtilitySpells);
 
                         string utilSpellChoice = ReadNonEmptyInput();
-                        // change numbers into indexes 123 -> 012
                         int utilSpellIndex = int.Parse(utilSpellChoice) - 1;
 
+                        // Sicherheitscheck für den Index
+                        if (utilSpellIndex < 0 || utilSpellIndex >= wizard01.UtilitySpells.Count)
+                        {
+                            Console.WriteLine("Invalid spell choice!\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
+
                         Spell selectedUtilSpell = wizard01.UtilitySpells[utilSpellIndex];
-                       DisplaySpells(wizard01.UtilitySpells);
 
+                        // Prüfung auf Mana
+                        if (wizard01.Mana < selectedUtilSpell.ManaCost) 
+                        {
+                            Console.WriteLine($"Not enough mana! (Need {selectedUtilSpell.ManaCost}, have {wizard01.Mana})\n");
+                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                        }
+
+                        // Wenn genug Mana da ist: Zaubern und Drache greift an
                         wizard01.CastUtilSpell(selectedUtilSpell, wizard01);
-
-                        break;
-                    default:
-                        Console.WriteLine("Invalid choice, please try again.");
+                        
+                        if (dragon01.Health > 0)
+                        {
+                            dragon01.Attack(wizard01);
+                        }
                         break;
                 }
+                
+                
             } while (dragon01.Health > 0 && wizard01.Health > 0);
         
         }
