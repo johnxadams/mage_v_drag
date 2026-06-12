@@ -35,7 +35,6 @@ namespace Mage_v_Drag
     class Wizard : Character
     {
         public static int CountOfWizards { get; private set; }
-        // public string NameOfWizard { get; set; }
         public List<Spell> Spells { get; set; }
         public List<Spell> UtilitySpells { get; set; }
         // private int Mana { get; set; }
@@ -45,9 +44,6 @@ namespace Mage_v_Drag
         public Wizard(string name, int mana, int health, float experience)
     : base(name, health, mana)
         {
-            // NameOfWizard = name;
-            // Mana = mana;
-            // Health = health;
             Experience = experience;
             Spells = new List<Spell>(){
                 new Spell("Sorcerous Storm", 30, (w, d) => d.TakeDamage(170)),
@@ -150,7 +146,6 @@ namespace Mage_v_Drag
 
     class Dragon : Character
     {
-        public string NameOfDragon { get; set; }
         public List<Attack> Attacks { get; set; }
         private float Experience { get; set; }
 
@@ -159,9 +154,6 @@ namespace Mage_v_Drag
 
         public Dragon(string name, int health, int mana, float experience) : base(name, health, mana)
         {
-            NameOfDragon = name;
-            Health = health;
-            Mana = mana;
             Experience = experience;
             Attacks = new List<Attack>(){
                 new Attack("Fire Breath", 50, 30),
@@ -172,7 +164,7 @@ namespace Mage_v_Drag
 
         public void UseAttack(Attack attack, Wizard wizard)
         {
-            Console.WriteLine($"{NameOfDragon} attacks with {attack.Name}!");
+            Console.WriteLine($"{Name} attacks with {attack.Name}!");
             wizard.TakeDamage(attack.Damage);
         }
 
@@ -207,7 +199,7 @@ namespace Mage_v_Drag
             Dragon dragon01 = new ("Tiamat", 1000, 300, 700);
 
             IEnumerable<string> abilityNames = dragon01.Attacks.Select(s => s.Name);
-            Console.WriteLine($"{dragon01.NameOfDragon} has the following attacks: {string.Join(", ", abilityNames)}");
+            Console.WriteLine($"{dragon01.Name} has the following attacks: {string.Join(", ", abilityNames)}");
             Console.ForegroundColor = ConsoleColor.DarkCyan;
         
             do 
