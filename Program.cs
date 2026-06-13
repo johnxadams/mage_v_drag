@@ -41,7 +41,7 @@ namespace Mage_v_Drag
         private float Experience { get; set; }
 
 
-        public Wizard(string name, int mana, int health, float experience)
+        public Wizard(string name, int health, int mana,float experience)
     : base(name, health, mana)
         {
             Experience = experience;
