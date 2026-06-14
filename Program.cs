@@ -123,21 +123,6 @@ namespace Mage_v_Drag
                     Name = name;
                     ManaCost = manaCost;
                 }
-
-        // public Spell(string name, int manaCost, Action<Wizard, Dragon> effect)
-        // {
-        //     Name = name;
-        //     ManaCost = manaCost;
-        //     EffectDragon = effect;
-        // }
-
-        // public Spell(string name, int manaCost, Action<Wizard> effect)
-        // {
-        //     Name = name;
-        //     ManaCost = manaCost;
-        //     EffectSelf = effect; 
-        // }
-
     }
 
     class Attack
