@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -55,7 +56,7 @@ namespace Mage_v_Drag
             };
             UtilitySpells = new List<Spell>(){
                 new Spell("Heal", 20) {EffectSelf = (w) => w.HealCharacter(200)},
-                new Spell("Meditate", 25) {EffectSelf = (w) => w.RegenerateMana(130)},
+                new Spell("Meditate", 0) {EffectSelf = (w) => w.RegenerateMana(130)},
                 new Spell("Invisibility", 35) {EffectSelf = (w) => Console.WriteLine($"{w.Name} is now invisible!")},
                 // new Spell("Heal", 20, (w) => w.HealCharacter(200)),
                 // new Spell("Meditate", 0, (w) => w.RegenerateMana(130)),
@@ -197,9 +198,9 @@ namespace Mage_v_Drag
     {
         static void Main(string[] args) 
         {
-            /* Parameter: Name, Health, Mana, Exp. */
+            /* Parameter: name, health, mana, exp. */
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Wizard wizard01 = new ("Aerith", 120, 400, 2000);
+            Wizard wizard01 = new ("Aerith", 400, 120, 2000);
 
             Console.WriteLine($"Total Wizards Created: {Wizard.CountOfWizards}");
             
@@ -216,81 +217,134 @@ namespace Mage_v_Drag
             do 
             {
                 Console.WriteLine("Choose an action: 1. Cast Spell 2. Use Utility Spell 3. Attack Dragon");
-            Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Red;
 
                 string choice = ReadNonEmptyInput();
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                 switch (choice)
                 {
                     case "1":
-                        Console.WriteLine("Choose a spell to cast:");
-                        DisplaySpells(wizard01.Spells);
+                        Spell? selectedSpell = null;
 
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        string spellChoice = ReadNonEmptyInput();
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        while (true)
+                        { 
+                            Console.WriteLine("Choose a spell to cast (or type 0 to go back):");
+                            DisplaySpells(wizard01.Spells);
 
-                        int spellIndex = int.Parse(spellChoice) - 1;
-                        
-                        if (spellIndex < 0 || spellIndex >= wizard01.Spells.Count)
-                        {
-                            Console.WriteLine("Invalid spell choice!\n");
-                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            string spellChoice = ReadNonEmptyInput();
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+
+                            if (!int.TryParse(spellChoice, out int spellIndex))
+                            {
+                                Console.WriteLine("Invalid input! Please enter a number.\n");
+                                continue; 
+                            }
+
+                            // The Escape Hatch
+                            if (spellIndex == 0)
+                            {
+                                break; // Breaks the while loop, selectedSpell remains null
+                            }
+
+                            spellIndex -= 1;
+                            
+                            if (spellIndex < 0 || spellIndex >= wizard01.Spells.Count)
+                            {
+                                Console.WriteLine("Invalid spell choice!\n");
+                                continue; 
+                            }
+
+                            Spell tempSpell = wizard01.Spells[spellIndex];
+                         
+                            if (wizard01.Mana < tempSpell.ManaCost)
+                            {
+                                Console.WriteLine($"Not enough mana! (Need {tempSpell.ManaCost}, have {wizard01.Mana})\n");
+                                break; // Breaks the while loop, sending them back to the main menu
+                            }
+
+                            // If we make it here, the spell is valid! lock it in selectedSpell.
+                            selectedSpell = tempSpell;
+                            break;
                         }
 
-                        Spell selectedSpell = wizard01.Spells[spellIndex];
-
-                     
-                        if (wizard01.Mana < selectedSpell.ManaCost)
+                        // after the while loop
+                        if (selectedSpell == null)
                         {
-                            Console.WriteLine($"Not enough mana! (Need {selectedSpell.ManaCost}, have {wizard01.Mana})\n");
+                            // if user typed 0 or didn't have mana, start the main menu over
                             continue; 
                         }
 
-                        
+                        // THE ACTUALL ACTION
                         wizard01.CastSpell(selectedSpell, dragon01);
                         
                         if (dragon01.Health > 0)
                         {
                             dragon01.Attack(wizard01);
                         }
-                        break;
+                        break; // Ends Case 1
 
                     case "2":
-                        Console.WriteLine("Choose a utility spell to use:");
-                        DisplaySpells(wizard01.UtilitySpells);
+                        Spell? selectedUtilSpell = null;
 
-                        string utilSpellChoice = ReadNonEmptyInput();
-                        int utilSpellIndex = int.Parse(utilSpellChoice) - 1;
+                        while(true)
+                        { 
+                            Console.WriteLine("Choose a utility spell to use (or type 0 to go back):");
+                            DisplaySpells(wizard01.UtilitySpells);
 
-                        // Sicherheitscheck für den Index
-                        if (utilSpellIndex < 0 || utilSpellIndex >= wizard01.UtilitySpells.Count)
-                        {
-                            Console.WriteLine("Invalid spell choice!\n");
-                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            string utilSpellChoice = ReadNonEmptyInput();
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+
+                            // Replaced int.Parse with the safe TryParse to prevent crashes
+                            if (!int.TryParse(utilSpellChoice, out int utilSpellIndex))
+                            {
+                                Console.WriteLine("Invalid input! Please enter a number.\n");
+                                continue; 
+                            }
+
+                            // The Escape Hatch
+                            if (utilSpellIndex == 0)
+                            {
+                                break; 
+                            }
+
+                            utilSpellIndex -= 1;
+
+                            if (utilSpellIndex < 0 || utilSpellIndex >= wizard01.UtilitySpells.Count)
+                            {
+                                Console.WriteLine("Invalid spell choice!\n");
+                                continue; 
+                            }
+
+                            Spell tempUtilSpell = wizard01.UtilitySpells[utilSpellIndex];
+
+                            if (wizard01.Mana < tempUtilSpell.ManaCost) 
+                            {
+                                Console.WriteLine($"Not enough mana! (Need {tempUtilSpell.ManaCost}, have {wizard01.Mana})\n");
+                                break; 
+                            }
+
+                            selectedUtilSpell = tempUtilSpell;
+                            break;
                         }
 
-                        Spell selectedUtilSpell = wizard01.UtilitySpells[utilSpellIndex];
-
-                        // Prüfung auf Mana
-                        if (wizard01.Mana < selectedUtilSpell.ManaCost) 
+                        // THE ROUTER (After the while loop)
+                        if (selectedUtilSpell == null)
                         {
-                            Console.WriteLine($"Not enough mana! (Need {selectedUtilSpell.ManaCost}, have {wizard01.Mana})\n");
-                            continue; // Bricht ab und startet wieder beim Hauptmenü
+                            continue; 
                         }
 
-                        // Wenn genug Mana da ist: Zaubern und Drache greift an
+                        // THE ACTION
                         wizard01.CastUtilSpell(selectedUtilSpell, wizard01);
                         
                         if (dragon01.Health > 0)
                         {
                             dragon01.Attack(wizard01);
                         }
-                        break;
+                        break; // Ends Case 2
                 }
-                
-                
             } while (dragon01.Health > 0 && wizard01.Health > 0);
         
         }
