@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Mage_v_Drag")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1389652f043d9cd07b2b803a4df1ac8f3164956")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d7e7110cd9d1b96eaabc21016e9eea8fb8cac79")]
 [assembly: System.Reflection.AssemblyProductAttribute("Mage_v_Drag")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Mage_v_Drag")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
